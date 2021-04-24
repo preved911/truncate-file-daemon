@@ -12,10 +12,9 @@ var log *logrus.Logger
 var filenames []string
 
 func main() {
-	logLevel := pflag.StringP("log-level", "v", "info", "log level")
+	logLevel := pflag.String("log-level", "info", "log level")
 	interval := pflag.StringP("interval", "i", "@every 1h", "given files truncate interval in cron notation")
 	pflag.Parse()
-	filenames = pflag.Args()
 
 	log = logrus.New()
 	lvl, err := logrus.ParseLevel(*logLevel)
@@ -23,6 +22,9 @@ func main() {
 		log.Fatal("failed to recognize given log level")
 	}
 	log.SetLevel(lvl)
+
+	filenames = pflag.Args()
+	log.Debugf("truncate log files: %v", filenames)
 
 	c := cron.New(
 		cron.WithLogger(cron.VerbosePrintfLogger(log)))
